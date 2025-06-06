@@ -1,6 +1,6 @@
 #pragma once
 
-#if (_MSC_VER >= 1910) || !defined(_MSC_VER)
+#if(_MSC_VER >= 1910) || !defined(_MSC_VER)
     #ifndef HAVE_SNPRINTF
         #define HAVE_SNPRINTF
     #endif
@@ -25,15 +25,17 @@
 PYBIND11_MAKE_OPAQUE(std::vector<uint8_t>);
 PYBIND11_MAKE_OPAQUE(std::vector<dai::Point2f>);
 
-namespace pybind11 { namespace detail {
-    template<>
-    inline handle path_caster<std::filesystem::path>::cast(const std::filesystem::path& path, return_value_policy /* policy */, handle /* parent */) {
-        if (auto py_str = unicode_from_fs_native(path.native())) {
-            return reinterpret_steal<object>(py_str).release();
-        }
-        return nullptr;
+namespace pybind11 {
+namespace detail {
+template <>
+inline handle path_caster<std::filesystem::path>::cast(const std::filesystem::path& path, return_value_policy /* policy */, handle /* parent */) {
+    if(auto py_str = unicode_from_fs_native(path.native())) {
+        return reinterpret_steal<object>(py_str).release();
     }
-}} // namespace pybind11::detail
+    return nullptr;
+}
+}  // namespace detail
+}  // namespace pybind11
 
 namespace py = pybind11;
 
