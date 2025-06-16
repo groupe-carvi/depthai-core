@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.2)
-
 # Parse out arguments
 foreach(_arg RANGE ${CMAKE_ARGC})
     if(append)
