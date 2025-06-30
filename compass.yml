@@ -1,0 +1,16 @@
+name: depthai-core
+id: ari:cloud:compass:e489ce12-950f-402e-8d4e-940f40450fe5:component/d3e19302-71bb-4ac1-ba88-53bb212819ec/e0ee89bd-47a6-4808-b062-daff147e14d6
+description: DepthAI C++ Library
+configVersion: 1
+typeId: SERVICE
+fields:
+  tier: 4
+links:
+  - name: null
+    type: REPOSITORY
+    url: https://github.com/groupe-carvi/depthai-core
+relationships:
+  DEPENDS_ON: []
+labels:
+  - source:github
+customFields: null
