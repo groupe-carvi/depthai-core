@@ -1,0 +1,57 @@
+version: '3'
+
+vars:
+  BUILD_DIR: '{{.BUILD_DIR | default "build"}}'
+  CMAKE_ARGS: '{{.CMAKE_ARGS | default ""}}'
+  BUILD_ARGS: '{{.BUILD_ARGS | default ""}}'
+  PARALLEL: '{{.PARALLEL | default ""}}'
+  PRESET: '{{.PRESET | default "default"}}'
+  USE_PRESET: '{{.USE_PRESET | default "0"}}'
+
+  # Common convenience vars
+  # Use: `task build -- -j 8` by setting BUILD_ARGS, or `task build BUILD_ARGS="--parallel 8"`
+  # (CMake accepts both `--parallel` and generator-native args depending on version/generator.)
+
+silent: false
+
+tasks:
+  default:
+    desc: Build depthai-core
+    cmds:
+      - task: build
+
+  configure:
+    desc: Configure CMake (defaults to `cmake -S . -B build`; set USE_PRESET=1 to use CMakePresets)
+    cmds:
+      - |
+        set -euo pipefail
+        if [ "{{.USE_PRESET}}" = "1" ]; then
+          cmake --preset "{{.PRESET}}" {{.CMAKE_ARGS}}
+        else
+          cmake -S . -B "{{.BUILD_DIR}}" {{.CMAKE_ARGS}}
+        fi
+
+  build:
+    desc: Build (runs configure first)
+    deps: [configure]
+    cmds:
+      - |
+        set -euo pipefail
+        if [ -n "{{.PARALLEL}}" ]; then
+          cmake --build "{{.BUILD_DIR}}" --parallel "{{.PARALLEL}}" {{.BUILD_ARGS}}
+        else
+          cmake --build "{{.BUILD_DIR}}" {{.BUILD_ARGS}}
+        fi
+
+  test:
+    desc: Run ctest from the build directory
+    deps: [build]
+    cmds:
+      - |
+        set -euo pipefail
+        ctest --test-dir "{{.BUILD_DIR}}" {{.CTEST_ARGS}}
+
+  clean:
+    desc: Remove the build directory
+    cmds:
+      - rm -rf "{{.BUILD_DIR}}"
